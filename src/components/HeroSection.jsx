@@ -22,12 +22,24 @@ const HeroSection = () => {
   const [audioLevel, setAudioLevel] = useState(0)
   const [recordedAudio, setRecordedAudio] = useState(null)
   
+  // New hands-free states
+  const [employeeText, setEmployeeText] = useState('')
+  const [customerText, setCustomerText] = useState('')
+  const [statusText, setStatusText] = useState('Idle')
+  const [isEnrolling, setIsEnrolling] = useState(false)
+  const [isHandsFree, setIsHandsFree] = useState(false)
+  
   // Refs for audio handling
   const mediaRecorderRef = useRef(null)
   const audioStreamRef = useRef(null)
   const audioContextRef = useRef(null)
   const analyserRef = useRef(null)
   const animationFrameRef = useRef(null)
+  
+  // New refs for hands-free functionality
+  const verbumRef = useRef(null)
+  const routerRef = useRef(null)
+  const enrolledRef = useRef(false)
 
   useEffect(() => {
     setIsVisible(true)
@@ -37,6 +49,14 @@ const HeroSection = () => {
     // Cleanup function
     return () => {
       stopRecording()
+      
+      // Cleanup hands-free resources
+      if (verbumRef.current) {
+        verbumRef.current.stopStream().catch(()=>{})
+        verbumRef.current.dispose?.()
+        verbumRef.current = null
+      }
+      
       if (audioStreamRef.current) {
         audioStreamRef.current.getTracks().forEach(track => track.stop())
       }
@@ -46,6 +66,9 @@ const HeroSection = () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
       }
+      
+      // Cleanup audio
+      import('./lib/audio.ts').then(m => m.cleanup()).catch(()=>{})
     }
   }, [])
 
@@ -361,9 +384,117 @@ const HeroSection = () => {
     setShowConsent(true)
   }
 
-  const handleConsentAccept = () => {
+  const handleConsentAccept = async () => {
     setShowConsent(false)
     setShowConversation(true)
+    setIsHandsFree(true)
+
+    // 1) mic permission
+    let stream = audioStreamRef.current
+    if (!stream || !hasPermission) {
+      stream = await requestMicrophonePermission()
+      if (!stream) return
+    }
+
+    // 2) short employee enrollment (5–8s) – reuse MediaRecorder path
+    try {
+      setIsEnrolling(true)
+      setStatusText('Please read the phrase aloud for a few seconds to enroll your voice...')
+      
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+      const src = audioCtx.createMediaStreamSource(stream)
+      const rec = audioCtx.createScriptProcessor(4096, 1, 1)
+      const buffers = []
+      
+      rec.onaudioprocess = e => buffers.push(e.inputBuffer.getChannelData(0).slice(0))
+      src.connect(rec)
+      rec.connect(audioCtx.destination)
+
+      await new Promise(r => setTimeout(r, 6000)) // simple 6s capture
+      rec.disconnect()
+      src.disconnect()
+
+      const flat = new Float32Array(buffers.reduce((a,b)=>a+b.length,0))
+      let o=0
+      buffers.forEach(b=>{ flat.set(b,o); o+=b.length })
+
+      // 3) init verbum + enroll
+      const { createVerbumHandle } = await import('./adapters/verbumAdapter.ts')
+      verbumRef.current = await createVerbumHandle()
+      await verbumRef.current.enrollEmployeeVoice(flat)
+      enrolledRef.current = true
+      setIsEnrolling(false)
+
+      // 4) init router
+      const { SpeakerRouter } = await import('./lib/speakerRouter.ts')
+      const { translateText } = await import('./api/translationClient.ts')
+      
+      routerRef.current = new SpeakerRouter(
+        { minTurn:1500, silence:600, vp:0.65 },
+        async (role, text) => {
+          if (role === 'employee') {
+            setEmployeeText(text)
+            try {
+              const { translatedText } = await translateText({ 
+                text, 
+                source:'en', 
+                target:selectedLanguage?.code?.slice(0,2) || 'es' 
+              })
+              setCustomerText(translatedText)
+            } catch (error) {
+              console.error('Translation failed:', error)
+            }
+          } else {
+            setCustomerText(text)
+            try {
+              const { translatedText } = await translateText({ 
+                text, 
+                source:selectedLanguage?.code?.slice(0,2) || 'es', 
+                target:'en' 
+              })
+              setEmployeeText(translatedText)
+              // optional TTS: const url = await verbumRef.current.synthesize(translatedText, 'en'); await play(url);
+            } catch (error) {
+              console.error('Translation failed:', error)
+            }
+          }
+        },
+        setStatusText
+      )
+
+      // 5) start SDK stream (hands‑free)
+      await verbumRef.current.startStream(
+        { diarization:true, vad:true, echoCancellation:true }, 
+        (chunk) => {
+          // When speech detected, duck any playing TTS; resume after 600ms silence
+          if (chunk.vad?.isSpeech) { 
+            import('./lib/audio.ts').then(m=>m.duck())
+            setIsSpeaking(true)
+          } else { 
+            import('./lib/audio.ts').then(m=>m.resumeAfter(600))
+            setIsSpeaking(false)
+          }
+          
+          routerRef.current.push({
+            ts: Date.now(),
+            partial: chunk.partial,
+            final: chunk.final,
+            diarization: chunk.diarization,
+            voiceprintScore: chunk.voiceprintScore,
+            vad: chunk.vad
+          })
+        }
+      )
+
+      setIsRecording(true)
+      setStatusText('Hands-free mode active - speak naturally')
+
+    } catch (e) {
+      console.error('hands-free init failed', e)
+      setPermissionError('Could not start hands‑free mode. Please try again.')
+      setIsEnrolling(false)
+      setIsHandsFree(false)
+    }
   }
 
   const handleConsentDecline = () => {
@@ -543,14 +674,7 @@ const HeroSection = () => {
                         : 'text-red-300'
                       : 'text-white opacity-70'
                   }`}>
-                    {isRecording 
-                      ? isSpeaking 
-                        ? 'LISTENING...' 
-                        : 'RECORDING - SPEAK NOW'
-                      : hasPermission === false
-                        ? 'MICROPHONE DISABLED'
-                        : 'MICROPHONE READY'
-                    }
+                    {statusText.toUpperCase()}
                   </span>
                   <div className={`w-3 h-3 rounded-full ${
                     isRecording 
@@ -612,7 +736,7 @@ const HeroSection = () => {
                   style={{ background: 'var(--glass-light)', borderColor: 'var(--stroke)' }}
                 >
                   <p className="text-body" style={{ color: 'var(--text-primary)' }}>
-                    "Hello, how can I help you today?"
+                    {employeeText || '"Hello, how can I help you today?"'}
                   </p>
                 </div>
               </div>
@@ -628,47 +752,92 @@ const HeroSection = () => {
                   style={{ background: 'var(--glass-light)', borderColor: 'var(--stroke)' }}
                 >
                   <p className="text-body" style={{ color: 'var(--text-primary)' }}>
-                    {getCustomerGreeting(selectedLanguage)}
+                    {customerText || getCustomerGreeting(selectedLanguage)}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Recording controls */}
-            <div className="flex justify-center gap-4 mb-6">
-              <Button
-                onClick={toggleRecording}
-                className={`pill-button px-6 py-3 flex items-center gap-2 ${
-                  isRecording 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                }`}
-              >
-                {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                {isRecording ? 'Stop' : 'Begin'}
-              </Button>
-              
-              <Button
-                onClick={playRecordedAudio}
-                disabled={!recordedAudio}
-                className={`pill-button px-6 py-3 flex items-center gap-2 ${
-                  recordedAudio 
-                    ? 'bg-green-600 hover:bg-green-700 text-white' 
-                    : 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                }`}
-              >
-                <Volume2 className="w-5 h-5" />
-                Play Translation
-              </Button>
-            </div>
+            {/* Recording controls - Hidden in hands-free mode */}
+            {!isHandsFree && (
+              <div className="flex justify-center gap-4 mb-6">
+                <Button
+                  onClick={toggleRecording}
+                  className={`pill-button px-6 py-3 flex items-center gap-2 ${
+                    isRecording 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                  {isRecording ? 'Stop' : 'Begin'}
+                </Button>
+                
+                <Button
+                  onClick={playRecordedAudio}
+                  disabled={!recordedAudio}
+                  className={`pill-button px-6 py-3 flex items-center gap-2 ${
+                    recordedAudio 
+                      ? 'bg-green-600 hover:bg-green-700 text-white' 
+                      : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  <Volume2 className="w-5 h-5" />
+                  Play Translation
+                </Button>
+              </div>
+            )}
+
+            {/* Hands-free controls */}
+            {isHandsFree && (
+              <div className="flex justify-center gap-4 mb-6">
+                <Button
+                  onClick={async () => {
+                    if (verbumRef.current) {
+                      await verbumRef.current.stopStream()
+                      setStatusText('Paused')
+                      setIsRecording(false)
+                    }
+                  }}
+                  className="pill-button px-6 py-3 flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white"
+                >
+                  <MicOff className="w-5 h-5" />
+                  Pause Listening
+                </Button>
+                
+                <Button
+                  onClick={playRecordedAudio}
+                  disabled={!recordedAudio}
+                  className={`pill-button px-6 py-3 flex items-center gap-2 ${
+                    recordedAudio 
+                      ? 'bg-green-600 hover:bg-green-700 text-white' 
+                      : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  <Volume2 className="w-5 h-5" />
+                  Play Translation
+                </Button>
+              </div>
+            )}
 
             {/* Back to language selection */}
             <div className="text-center">
               <Button
-                onClick={() => {
+                onClick={async () => {
+                  // Cleanup hands-free resources
+                  if (verbumRef.current) {
+                    await verbumRef.current.stopStream().catch(()=>{})
+                    verbumRef.current.dispose?.()
+                    verbumRef.current = null
+                  }
+                  
                   setShowConversation(false)
                   setShowLanguageGrid(true)
                   setSelectedLanguage(null)
+                  setIsHandsFree(false)
+                  setEmployeeText('')
+                  setCustomerText('')
+                  setStatusText('Idle')
                   stopRecording()
                   setRecordedAudio(null)
                 }}
