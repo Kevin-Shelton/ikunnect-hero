@@ -227,12 +227,13 @@ const HeroSection = () => {
             className="glass-card p-8 text-center"
             style={{ background: 'var(--glass)', borderColor: 'var(--stroke)' }}
           >
-            <h1 className="text-display mb-4" style={{ color: 'var(--text-primary)' }}>
-              iKunnect
-            </h1>
-            <h2 className="text-h2 mb-6" style={{ color: 'var(--text-primary)' }}>
-              Intelligence
-            </h2>
+            <div className="text-center mb-6">
+              <img 
+                src="/ikow.svg" 
+                alt="iKOneWorld - One Platform Every Language Every Channel"
+                className="mx-auto h-20 w-auto mb-4"
+              />
+            </div>
             
             <div className="mb-8">
               <div className="mb-4">
@@ -284,25 +285,42 @@ const HeroSection = () => {
             style={{ background: 'var(--glass)', borderColor: 'var(--stroke)' }}
           >
             <div className="text-center mb-8">
-              <h1 className="text-display mb-2" style={{ color: 'var(--text-primary)' }}>
-                iKunnect
-              </h1>
-              <h2 className="text-h2 mb-4" style={{ color: 'var(--text-primary)' }}>
-                Intelligence
-              </h2>
+              <img 
+                src="/src/assets/ikow.svg" 
+                alt="iKOneWorld - One Platform Every Language Every Channel"
+                className="mx-auto h-20 w-auto mb-6"
+              />
               
-              {/* Ever-present pulsating orb */}
+              {/* Enhanced ever-present pulsating orb */}
               <div className="flex justify-center mb-6">
-                <div 
-                  className={`w-24 h-24 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    isSpeaking ? 'animate-pulse scale-110' : ''
-                  }`}
-                  style={{ 
-                    background: 'var(--orb-gradient)',
-                    boxShadow: isSpeaking ? '0 0 30px rgba(59, 130, 246, 0.6)' : '0 0 20px rgba(59, 130, 246, 0.3)'
-                  }}
-                >
-                  <Languages className="w-8 h-8" style={{ color: 'white' }} />
+                <div className="relative">
+                  <div 
+                    className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-500 ${
+                      isSpeaking ? 'scale-110' : 'scale-100'
+                    }`}
+                    style={{ 
+                      background: 'var(--orb-gradient)',
+                      boxShadow: isSpeaking 
+                        ? '0 0 50px rgba(59, 130, 246, 0.8), 0 0 100px rgba(59, 130, 246, 0.4)' 
+                        : '0 0 30px rgba(59, 130, 246, 0.5)'
+                    }}
+                  >
+                    <Languages className="w-12 h-12" style={{ color: 'white' }} />
+                  </div>
+                  
+                  {/* Animated pulse rings */}
+                  {isSpeaking && (
+                    <>
+                      <div 
+                        className="absolute inset-0 w-32 h-32 rounded-full animate-ping opacity-40"
+                        style={{ background: 'rgba(59, 130, 246, 0.3)' }}
+                      ></div>
+                      <div 
+                        className="absolute inset-0 w-32 h-32 rounded-full animate-pulse opacity-60"
+                        style={{ background: 'rgba(59, 130, 246, 0.2)' }}
+                      ></div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -402,24 +420,21 @@ const HeroSection = () => {
         <div className={`w-full max-w-4xl transition-all duration-1000 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
-          
-          {/* Glass card container */}
-          <div className="glass-card p-6 md:p-8">
-            
-            {/* Header */}
-            <div className="text-center mb-8">
-              <h1 className="text-display mb-2" style={{ color: 'var(--text-primary)' }}>
-                iKunnect
-              </h1>
-              <h2 className="text-h2 mb-4" style={{ color: 'var(--text-primary)' }}>
-                Intelligence
-              </h2>
-              <p className="text-body" style={{ color: 'var(--text-muted)' }}>
+              <div 
+            className="glass-card p-6 md:p-8"
+            style={{ background: 'var(--glass)', borderColor: 'var(--stroke)' }}
+          >
+            {/* Logo */}
+            <div className="text-center mb-6">
+              <img 
+                src="/ikow.svg" 
+                alt="iKOneWorld - One Platform Every Language Every Channel"
+                className="mx-auto h-16 w-auto mb-4"
+              />
+              <p className="text-h3 mb-4" style={{ color: 'var(--text-primary)' }}>
                 Select your target language
               </p>
-            </div>
-
-            {/* Search */}
+            </div> */}
             <div className="relative mb-6">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <Input
@@ -516,14 +531,13 @@ const HeroSection = () => {
         {/* Glass card container */}
         <div className="glass-card p-6 md:p-8 lg:p-12">
           
-          {/* Main heading with gradient */}
+          {/* Logo */}
           <div className="text-center mb-8">
-            <h1 className="text-display mb-2" style={{ color: 'var(--text-primary)' }}>
-              iKunnect
-            </h1>
-            <h2 className="text-h2 mb-4" style={{ color: 'var(--text-primary)' }}>
-              Intelligence
-            </h2>
+            <img 
+              src="/ikow.svg" 
+              alt="iKOneWorld - One Platform Every Language Every Channel"
+              className="mx-auto h-24 w-auto mb-4"
+            />
             <p className="text-body max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
               Real-time translation supporting 152+ languages with AI-powered intelligence
             </p>
