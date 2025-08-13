@@ -20,7 +20,7 @@ const HeroSection = () => {
     setIsVisible(true)
   }, [])
 
-  // Comprehensive language data organized by regions
+  // Comprehensive language data_organized by regions
   const languageGroups = {
     'English': [
       { code: 'en-US', name: 'English (United States)', native: 'English', flag: 'US', priority: 1 },
