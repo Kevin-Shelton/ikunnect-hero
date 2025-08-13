@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Languages, ChevronDown, ArrowLeftRight, Search, Mic, MicOff, Volume2 } from 'lucide-react'
+import logoSvg from '../assets/ikow.svg'
 
 const HeroSection = () => {
   const [emailMode, setEmailMode] = useState(false)
@@ -229,7 +230,7 @@ const HeroSection = () => {
           >
             <div className="text-center mb-6">
               <img 
-                src="/ikow.svg" 
+                src={logoSvg} 
                 alt="iKOneWorld - One Platform Every Language Every Channel"
                 className="mx-auto h-20 w-auto mb-4"
               />
@@ -286,7 +287,7 @@ const HeroSection = () => {
           >
             <div className="text-center mb-8">
               <img 
-                src="/src/assets/ikow.svg" 
+                src={logoSvg} 
                 alt="iKOneWorld - One Platform Every Language Every Channel"
                 className="mx-auto h-20 w-auto mb-6"
               />
@@ -427,7 +428,7 @@ const HeroSection = () => {
             {/* Logo */}
             <div className="text-center mb-6">
               <img 
-                src="/ikow.svg" 
+                src={logoSvg} 
                 alt="iKOneWorld - One Platform Every Language Every Channel"
                 className="mx-auto h-16 w-auto mb-4"
               />
@@ -534,7 +535,7 @@ const HeroSection = () => {
           {/* Logo */}
           <div className="text-center mb-8">
             <img 
-              src="/ikow.svg" 
+              src={logoSvg} 
               alt="iKOneWorld - One Platform Every Language Every Channel"
               className="mx-auto h-24 w-auto mb-4"
             />
