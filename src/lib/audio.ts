@@ -1,5 +1,6 @@
 // Audio Management for iKunnect - Complete Implementation
-// Handles TTS playback, ducking, and audio control during live conversations
+// Handles TTS playback 
+// ducking, and audio control during live conversations
 
 interface AudioState {
   currentAudio: HTMLAudioElement | null;

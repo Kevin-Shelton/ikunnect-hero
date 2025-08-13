@@ -1,5 +1,5 @@
 // Translation Client for iKunnect - Complete Implementation
-// Handles direct API calls to translation service with fallback mock data
+// Handles direct API calls to_translation service with fallback mock data
 
 const BASE = import.meta.env.VITE_API_BASE_URL || process.env.API_BASE_URL || 'https://api.invictus.example.com';
 
