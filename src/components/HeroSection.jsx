@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
-import { Languages, ChevronDown, ArrowLeftRight, Search } from 'lucide-react'
+import { Languages, ChevronDown, ArrowLeftRight, Search, Mic, MicOff, Volume2 } from 'lucide-react'
 
 const HeroSection = () => {
   const [emailMode, setEmailMode] = useState(false)
   const [showLanguageGrid, setShowLanguageGrid] = useState(false)
+  const [showConversation, setShowConversation] = useState(false)
+  const [showConsent, setShowConsent] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] = useState(null)
   const [email, setEmail] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [isVisible, setIsVisible] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
 
   useEffect(() => {
     setIsVisible(true)
@@ -93,13 +98,40 @@ const HeroSection = () => {
 
   // Flatten all languages for search and display
   const allLanguages = Object.values(languageGroups).flat()
-  const recentLanguages = allLanguages.slice(0, 4)
+  
+  // Updated recent languages: US English, Mexican Spanish, Australian English, Canadian English
+  const recentLanguages = [
+    allLanguages.find(lang => lang.code === 'en-US'), // US English
+    allLanguages.find(lang => lang.code === 'es-MX'), // Mexican Spanish (replaced British)
+    allLanguages.find(lang => lang.code === 'en-AU'), // Australian English
+    allLanguages.find(lang => lang.code === 'en-CA')  // Canadian English
+  ].filter(Boolean)
   
   const filteredLanguages = allLanguages.filter(lang => 
     lang.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     lang.native.toLowerCase().includes(searchTerm.toLowerCase()) ||
     lang.code.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  // Consent messages in both languages
+  const getConsentMessage = (language) => {
+    const messages = {
+      'en-US': 'This conversation is being recorded for quality purposes. Do you agree to proceed?',
+      'es-MX': 'Esta conversación está siendo grabada con fines de calidad. ¿Está de acuerdo en continuar?',
+      'es-ES': 'Esta conversación está siendo grabada con fines de calidad. ¿Está de acuerdo en continuar?',
+      'fr-FR': 'Cette conversation est enregistrée à des fins de qualité. Êtes-vous d\'accord pour continuer?',
+      'de-DE': 'Dieses Gespräch wird zu Qualitätszwecken aufgezeichnet. Stimmen Sie zu, fortzufahren?',
+      'zh-CN': '此对话正在录音以确保质量。您同意继续吗？',
+      'ja-JP': 'この会話は品質向上のために録音されています。続行に同意しますか？',
+      'ko-KR': '이 대화는 품질 목적으로 녹음되고 있습니다. 계속 진행하는 것에 동의하십니까？',
+      'ar-SA': 'يتم تسجيل هذه المحادثة لأغراض الجودة. هل توافق على المتابعة؟',
+      'hi-IN': 'यह बातचीत गुणवत्ता के उद्देश्यों के लिए रिकॉर्ड की जा रही है। क्या आप आगे बढ़ने के लिए सहमत हैं?',
+      'pt-BR': 'Esta conversa está sendo gravada para fins de qualidade. Você concorda em prosseguir?',
+      'it-IT': 'Questa conversazione viene registrata per scopi di qualità. Sei d\'accordo a procedere?',
+      'ru-RU': 'Этот разговор записывается в целях качества. Согласны ли вы продолжить?'
+    }
+    return messages[language?.code] || messages['en-US']
+  }
 
   const handleStartConversation = () => {
     setShowLanguageGrid(true)
@@ -118,8 +150,30 @@ const HeroSection = () => {
   }
 
   const handleLanguageSelect = (language) => {
-    console.log('Selected language:', language)
-    // Navigate to conversation screen
+    setSelectedLanguage(language)
+    setShowLanguageGrid(false)
+    setShowConsent(true)
+  }
+
+  const handleConsentAccept = () => {
+    setShowConsent(false)
+    setShowConversation(true)
+  }
+
+  const handleConsentDecline = () => {
+    setShowConsent(false)
+    setShowLanguageGrid(true)
+  }
+
+  const toggleRecording = () => {
+    setIsRecording(!isRecording)
+    // Simulate speaking animation
+    if (!isRecording) {
+      setIsSpeaking(true)
+      setTimeout(() => setIsSpeaking(false), 3000)
+    } else {
+      setIsSpeaking(false)
+    }
   }
 
   // Flag component using country code with actual flag image
@@ -161,6 +215,182 @@ const HeroSection = () => {
     )
   }
 
+  // Consent Dialog Component
+  if (showConsent) {
+    return (
+      <div 
+        className={`min-h-screen flex items-center justify-center p-4 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        style={{ background: 'var(--bg-gradient)' }}
+      >
+        <div className="w-full max-w-2xl">
+          <div 
+            className="glass-card p-8 text-center"
+            style={{ background: 'var(--glass)', borderColor: 'var(--stroke)' }}
+          >
+            <h1 className="text-display mb-4" style={{ color: 'var(--text-primary)' }}>
+              iKunnect
+            </h1>
+            <h2 className="text-h2 mb-6" style={{ color: 'var(--text-primary)' }}>
+              Intelligence
+            </h2>
+            
+            <div className="mb-8">
+              <div className="mb-4">
+                <h3 className="text-h3 mb-2" style={{ color: 'var(--text-primary)' }}>English</h3>
+                <p className="text-body" style={{ color: 'var(--text-muted)' }}>
+                  This conversation is being recorded for quality purposes. Do you agree to proceed?
+                </p>
+              </div>
+              
+              <div className="mb-6">
+                <h3 className="text-h3 mb-2" style={{ color: 'var(--text-primary)' }}>{selectedLanguage?.native}</h3>
+                <p className="text-body" style={{ color: 'var(--text-muted)' }}>
+                  {getConsentMessage(selectedLanguage)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                onClick={handleConsentAccept}
+                className="pill-button bg-white text-blue-600 hover:bg-gray-100 px-8 py-3"
+              >
+                OK / Sí
+              </Button>
+              <Button
+                onClick={handleConsentDecline}
+                variant="outline"
+                className="pill-button border-white/30 text-white hover:bg-white/10 px-8 py-3"
+              >
+                Cancel / Cancelar
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Conversation Interface Component
+  if (showConversation) {
+    return (
+      <div 
+        className={`min-h-screen flex items-center justify-center p-4 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        style={{ background: 'var(--bg-gradient)' }}
+      >
+        <div className="w-full max-w-4xl">
+          <div 
+            className="glass-card p-8"
+            style={{ background: 'var(--glass)', borderColor: 'var(--stroke)' }}
+          >
+            <div className="text-center mb-8">
+              <h1 className="text-display mb-2" style={{ color: 'var(--text-primary)' }}>
+                iKunnect
+              </h1>
+              <h2 className="text-h2 mb-4" style={{ color: 'var(--text-primary)' }}>
+                Intelligence
+              </h2>
+              
+              {/* Ever-present pulsating orb */}
+              <div className="flex justify-center mb-6">
+                <div 
+                  className={`w-24 h-24 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    isSpeaking ? 'animate-pulse scale-110' : ''
+                  }`}
+                  style={{ 
+                    background: 'var(--orb-gradient)',
+                    boxShadow: isSpeaking ? '0 0 30px rgba(59, 130, 246, 0.6)' : '0 0 20px rgba(59, 130, 246, 0.3)'
+                  }}
+                >
+                  <Languages className="w-8 h-8" style={{ color: 'white' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Language pair display */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {/* Employee side (English) */}
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <FlagIcon countryCode="US" size="small" />
+                  <span className="text-h3" style={{ color: 'var(--text-primary)' }}>Employee</span>
+                </div>
+                <div 
+                  className="glass-card p-4 min-h-[120px] flex items-center justify-center"
+                  style={{ background: 'var(--glass-light)', borderColor: 'var(--stroke)' }}
+                >
+                  <p className="text-body" style={{ color: 'var(--text-primary)' }}>
+                    "Hello, how can I help you today?"
+                  </p>
+                </div>
+              </div>
+
+              {/* Customer side (Selected language) */}
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <FlagIcon countryCode={selectedLanguage?.flag} size="small" />
+                  <span className="text-h3" style={{ color: 'var(--text-primary)' }}>Customer</span>
+                </div>
+                <div 
+                  className="glass-card p-4 min-h-[120px] flex items-center justify-center"
+                  style={{ background: 'var(--glass-light)', borderColor: 'var(--stroke)' }}
+                >
+                  <p className="text-body" style={{ color: 'var(--text-primary)' }}>
+                    {selectedLanguage?.code === 'es-MX' ? '"Hola, ¿cómo me puede ayudar hoy?"' : 
+                     selectedLanguage?.code === 'fr-FR' ? '"Bonjour, comment pouvez-vous m\'aider aujourd\'hui?"' :
+                     selectedLanguage?.code === 'de-DE' ? '"Hallo, wie können Sie mir heute helfen?"' :
+                     selectedLanguage?.code === 'zh-CN' ? '"你好，今天你能帮我什么吗？"' :
+                     '"Hello, how can you help me today?"'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Recording controls */}
+            <div className="flex justify-center gap-4 mb-6">
+              <Button
+                onClick={toggleRecording}
+                className={`pill-button px-6 py-3 flex items-center gap-2 ${
+                  isRecording 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+              >
+                {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                {isRecording ? 'Stop Recording' : 'Start Recording'}
+              </Button>
+              
+              <Button
+                className="pill-button bg-green-600 hover:bg-green-700 text-white px-6 py-3 flex items-center gap-2"
+              >
+                <Volume2 className="w-5 h-5" />
+                Play Translation
+              </Button>
+            </div>
+
+            {/* Back to language selection */}
+            <div className="text-center">
+              <Button
+                onClick={() => {
+                  setShowConversation(false)
+                  setShowLanguageGrid(true)
+                  setSelectedLanguage(null)
+                  setIsRecording(false)
+                  setIsSpeaking(false)
+                }}
+                variant="outline"
+                className="pill-button border-white/30 text-white hover:bg-white/10 px-6 py-3"
+              >
+                Change Language
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Language Grid Component
   if (showLanguageGrid) {
     return (
       <div 
