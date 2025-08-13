@@ -170,6 +170,64 @@ const HeroSection = () => {
     return messages[language?.code] || messages['en-US']
   }
 
+  // Button text translations for consent dialog
+  const getButtonText = (language, buttonType) => {
+    const translations = {
+      'en-US': { ok: 'OK', cancel: 'Cancel' },
+      'es-MX': { ok: 'Sí', cancel: 'Cancelar' },
+      'es-ES': { ok: 'Sí', cancel: 'Cancelar' },
+      'fr-FR': { ok: 'OK', cancel: 'Annuler' },
+      'de-DE': { ok: 'OK', cancel: 'Abbrechen' },
+      'zh-CN': { ok: '确定', cancel: '取消' },
+      'zh-TW': { ok: '確定', cancel: '取消' },
+      'ja-JP': { ok: 'はい', cancel: 'キャンセル' },
+      'ko-KR': { ok: '확인', cancel: '취소' },
+      'ar-SA': { ok: 'موافق', cancel: 'إلغاء' },
+      'hi-IN': { ok: 'ठीक है', cancel: 'रद्द करें' },
+      'pt-BR': { ok: 'OK', cancel: 'Cancelar' },
+      'pt-PT': { ok: 'OK', cancel: 'Cancelar' },
+      'it-IT': { ok: 'OK', cancel: 'Annulla' },
+      'ru-RU': { ok: 'ОК', cancel: 'Отмена' },
+      'ms-MY': { ok: 'OK', cancel: 'Batal' },
+      'th-TH': { ok: 'ตกลง', cancel: 'ยกเลิก' },
+      'vi-VN': { ok: 'OK', cancel: 'Hủy' },
+      'id-ID': { ok: 'OK', cancel: 'Batal' },
+      'tl-PH': { ok: 'OK', cancel: 'Kanselahin' },
+      'nl-NL': { ok: 'OK', cancel: 'Annuleren' },
+      'sv-SE': { ok: 'OK', cancel: 'Avbryt' },
+      'da-DK': { ok: 'OK', cancel: 'Annuller' },
+      'no-NO': { ok: 'OK', cancel: 'Avbryt' },
+      'fi-FI': { ok: 'OK', cancel: 'Peruuta' },
+      'pl-PL': { ok: 'OK', cancel: 'Anuluj' },
+      'cs-CZ': { ok: 'OK', cancel: 'Zrušit' },
+      'hu-HU': { ok: 'OK', cancel: 'Mégse' },
+      'ro-RO': { ok: 'OK', cancel: 'Anulare' },
+      'bg-BG': { ok: 'ОК', cancel: 'Отказ' },
+      'hr-HR': { ok: 'OK', cancel: 'Otkaži' },
+      'sk-SK': { ok: 'OK', cancel: 'Zrušiť' },
+      'sl-SI': { ok: 'OK', cancel: 'Prekliči' },
+      'et-EE': { ok: 'OK', cancel: 'Tühista' },
+      'lv-LV': { ok: 'OK', cancel: 'Atcelt' },
+      'lt-LT': { ok: 'OK', cancel: 'Atšaukti' },
+      'mt-MT': { ok: 'OK', cancel: 'Ikkanċella' },
+      'el-GR': { ok: 'OK', cancel: 'Ακύρωση' },
+      'tr-TR': { ok: 'Tamam', cancel: 'İptal' },
+      'he-IL': { ok: 'אישור', cancel: 'ביטול' },
+      'fa-IR': { ok: 'تأیید', cancel: 'لغو' },
+      'ur-PK': { ok: 'ٹھیک ہے', cancel: 'منسوخ' },
+      'bn-BD': { ok: 'ঠিক আছে', cancel: 'বাতিল' },
+      'ta-IN': { ok: 'சரி', cancel: 'ரத்து' },
+      'te-IN': { ok: 'సరే', cancel: 'రద్దు' },
+      'ml-IN': { ok: 'ശരി', cancel: 'റദ്ദാക്കുക' },
+      'kn-IN': { ok: 'ಸರಿ', cancel: 'ರದ್ದುಮಾಡು' },
+      'gu-IN': { ok: 'બરાબર', cancel: 'રદ કરો' },
+      'pa-IN': { ok: 'ਠੀਕ ਹੈ', cancel: 'ਰੱਦ ਕਰੋ' }
+    }
+    
+    const langTranslation = translations[language?.code] || translations['en-US']
+    return langTranslation[buttonType]
+  }
+
   const handleStartConversation = () => {
     setShowLanguageGrid(true)
   }
@@ -295,14 +353,14 @@ const HeroSection = () => {
                 onClick={handleConsentAccept}
                 className="pill-button bg-white text-blue-600 hover:bg-gray-100 px-8 py-3"
               >
-                OK / Sí
+                OK / {getButtonText(selectedLanguage, 'ok')}
               </Button>
               <Button
                 onClick={handleConsentDecline}
                 variant="outline"
                 className="pill-button border-white/30 text-white hover:bg-white/10 px-8 py-3"
               >
-                Cancel / Cancelar
+                Cancel / {getButtonText(selectedLanguage, 'cancel')}
               </Button>
             </div>
           </div>
