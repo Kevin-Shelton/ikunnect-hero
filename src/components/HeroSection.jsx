@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
-import { Languages, ChevronDown, ArrowLeftRight, Search, Mic, MicOff, Volume2 } from 'lucide-react'
+import { Languages, ChevronDown, ArrowLeftRight, Search, Mic, MicOff, Volume2, AlertCircle } from 'lucide-react'
 import logoSvg from '../assets/ikow.svg'
 
 const HeroSection = () => {
@@ -15,10 +15,207 @@ const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
+  
+  // Microphone and audio recording states
+  const [hasPermission, setHasPermission] = useState(null)
+  const [permissionError, setPermissionError] = useState(null)
+  const [audioLevel, setAudioLevel] = useState(0)
+  const [recordedAudio, setRecordedAudio] = useState(null)
+  
+  // Refs for audio handling
+  const mediaRecorderRef = useRef(null)
+  const audioStreamRef = useRef(null)
+  const audioContextRef = useRef(null)
+  const analyserRef = useRef(null)
+  const animationFrameRef = useRef(null)
 
   useEffect(() => {
     setIsVisible(true)
+    // Check for microphone support
+    checkMicrophoneSupport()
+    
+    // Cleanup function
+    return () => {
+      stopRecording()
+      if (audioStreamRef.current) {
+        audioStreamRef.current.getTracks().forEach(track => track.stop())
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close()
+      }
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+    }
   }, [])
+
+  // Check if browser supports microphone access
+  const checkMicrophoneSupport = () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setPermissionError('Microphone access is not supported in this browser')
+      setHasPermission(false)
+      return false
+    }
+    return true
+  }
+
+  // Request microphone permission
+  const requestMicrophonePermission = async () => {
+    try {
+      setPermissionError(null)
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 44100
+        } 
+      })
+      
+      audioStreamRef.current = stream
+      setHasPermission(true)
+      
+      // Set up audio context for level monitoring
+      setupAudioContext(stream)
+      
+      console.log('Microphone permission granted')
+      return stream
+    } catch (error) {
+      console.error('Microphone permission denied:', error)
+      setHasPermission(false)
+      
+      if (error.name === 'NotAllowedError') {
+        setPermissionError('Microphone access denied. Please allow microphone access and try again.')
+      } else if (error.name === 'NotFoundError') {
+        setPermissionError('No microphone found. Please connect a microphone and try again.')
+      } else if (error.name === 'NotReadableError') {
+        setPermissionError('Microphone is already in use by another application.')
+      } else {
+        setPermissionError('Unable to access microphone. Please check your settings.')
+      }
+      return null
+    }
+  }
+
+  // Set up audio context for real-time audio level monitoring
+  const setupAudioContext = (stream) => {
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      const analyser = audioContext.createAnalyser()
+      const microphone = audioContext.createMediaStreamSource(stream)
+      
+      analyser.fftSize = 256
+      analyser.smoothingTimeConstant = 0.8
+      microphone.connect(analyser)
+      
+      audioContextRef.current = audioContext
+      analyserRef.current = analyser
+      
+      // Start monitoring audio levels
+      monitorAudioLevel()
+    } catch (error) {
+      console.error('Error setting up audio context:', error)
+    }
+  }
+
+  // Monitor audio levels for visual feedback
+  const monitorAudioLevel = () => {
+    if (!analyserRef.current) return
+    
+    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount)
+    
+    const updateLevel = () => {
+      analyserRef.current.getByteFrequencyData(dataArray)
+      
+      // Calculate average volume
+      const average = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length
+      const normalizedLevel = average / 255
+      
+      setAudioLevel(normalizedLevel)
+      
+      // Update speaking state based on audio level
+      setIsSpeaking(normalizedLevel > 0.1 && isRecording)
+      
+      if (isRecording) {
+        animationFrameRef.current = requestAnimationFrame(updateLevel)
+      }
+    }
+    
+    updateLevel()
+  }
+
+  // Start recording audio
+  const startRecording = async () => {
+    try {
+      let stream = audioStreamRef.current
+      
+      // Request permission if not already granted
+      if (!stream || !hasPermission) {
+        stream = await requestMicrophonePermission()
+        if (!stream) return
+      }
+      
+      // Create MediaRecorder
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      })
+      
+      const audioChunks = []
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunks.push(event.data)
+        }
+      }
+      
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
+        const audioUrl = URL.createObjectURL(audioBlob)
+        setRecordedAudio({ blob: audioBlob, url: audioUrl })
+        console.log('Recording stopped, audio saved')
+      }
+      
+      mediaRecorder.start(100) // Collect data every 100ms
+      mediaRecorderRef.current = mediaRecorder
+      
+      setIsRecording(true)
+      monitorAudioLevel()
+      
+      console.log('Recording started')
+    } catch (error) {
+      console.error('Error starting recording:', error)
+      setPermissionError('Failed to start recording. Please try again.')
+    }
+  }
+
+  // Stop recording audio
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop()
+      mediaRecorderRef.current = null
+    }
+    
+    setIsRecording(false)
+    setIsSpeaking(false)
+    setAudioLevel(0)
+    
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current)
+    }
+    
+    console.log('Recording stopped')
+  }
+
+  // Play recorded audio
+  const playRecordedAudio = () => {
+    if (recordedAudio?.url) {
+      const audio = new Audio(recordedAudio.url)
+      audio.play().catch(error => {
+        console.error('Error playing audio:', error)
+      })
+    }
+  }
 
   // Comprehensive language data organized by regions
   const languageGroups = {
@@ -175,15 +372,11 @@ const HeroSection = () => {
     setSelectedLanguage(null)
   }
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording)
-    setIsSpeaking(!isRecording)
-    
+  const toggleRecording = async () => {
     if (!isRecording) {
-      // Simulate speaking for 3 seconds
-      setTimeout(() => {
-        setIsSpeaking(false)
-      }, 3000)
+      await startRecording()
+    } else {
+      stopRecording()
     }
   }
 
@@ -321,7 +514,90 @@ const HeroSection = () => {
                   )}
                 </div>
               </div>
+
+              {/* Microphone Status Indicator - Always Visible */}
+              <div className="flex justify-center mb-6">
+                <div className="flex items-center gap-3 px-6 py-3 rounded-full shadow-lg" 
+                     style={{ 
+                       background: 'rgba(30, 64, 175, 0.8)', 
+                       borderColor: 'rgba(59, 130, 246, 0.5)',
+                       border: '2px solid',
+                       backdropFilter: 'blur(10px)'
+                     }}>
+                  <div className="relative">
+                    {isRecording ? (
+                      <div className="relative">
+                        <Mic className={`w-6 h-6 ${isSpeaking ? 'text-green-300' : 'text-red-300'}`} />
+                        {isSpeaking && (
+                          <div className="absolute -inset-2 rounded-full animate-ping bg-green-300 opacity-40"></div>
+                        )}
+                      </div>
+                    ) : (
+                      <MicOff className="w-6 h-6 text-white opacity-70" />
+                    )}
+                  </div>
+                  <span className={`text-base font-semibold ${
+                    isRecording 
+                      ? isSpeaking 
+                        ? 'text-green-300' 
+                        : 'text-red-300'
+                      : 'text-white opacity-70'
+                  }`}>
+                    {isRecording 
+                      ? isSpeaking 
+                        ? 'LISTENING...' 
+                        : 'RECORDING - SPEAK NOW'
+                      : hasPermission === false
+                        ? 'MICROPHONE DISABLED'
+                        : 'MICROPHONE READY'
+                    }
+                  </span>
+                  <div className={`w-3 h-3 rounded-full ${
+                    isRecording 
+                      ? isSpeaking 
+                        ? 'bg-green-300 animate-pulse' 
+                        : 'bg-red-300 animate-pulse'
+                      : hasPermission === false
+                        ? 'bg-red-400'
+                        : 'bg-gray-400'
+                  }`}></div>
+                </div>
+              </div>
             </div>
+
+            {/* Microphone Permission Status */}
+            {permissionError && (
+              <div className="mb-6 p-4 rounded-lg" style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', border: '1px solid' }}>
+                <div className="flex items-center gap-2 text-red-400">
+                  <AlertCircle className="w-5 h-5" />
+                  <span className="text-sm">{permissionError}</span>
+                </div>
+                <Button
+                  onClick={requestMicrophonePermission}
+                  className="mt-2 pill-button bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm"
+                >
+                  Grant Microphone Access
+                </Button>
+              </div>
+            )}
+
+            {/* Audio Level Indicator */}
+            {hasPermission && isRecording && (
+              <div className="mb-6 flex justify-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Audio Level:</span>
+                  <div className="w-32 h-2 rounded-full" style={{ background: 'var(--glass-light)' }}>
+                    <div 
+                      className="h-full rounded-full transition-all duration-100"
+                      style={{ 
+                        width: `${audioLevel * 100}%`,
+                        background: audioLevel > 0.5 ? '#10B981' : audioLevel > 0.2 ? '#F59E0B' : '#6B7280'
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Language pair display */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -373,7 +649,13 @@ const HeroSection = () => {
               </Button>
               
               <Button
-                className="pill-button bg-green-600 hover:bg-green-700 text-white px-6 py-3 flex items-center gap-2"
+                onClick={playRecordedAudio}
+                disabled={!recordedAudio}
+                className={`pill-button px-6 py-3 flex items-center gap-2 ${
+                  recordedAudio 
+                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                }`}
               >
                 <Volume2 className="w-5 h-5" />
                 Play Translation
@@ -387,8 +669,8 @@ const HeroSection = () => {
                   setShowConversation(false)
                   setShowLanguageGrid(true)
                   setSelectedLanguage(null)
-                  setIsRecording(false)
-                  setIsSpeaking(false)
+                  stopRecording()
+                  setRecordedAudio(null)
                 }}
                 variant="outline"
                 className="pill-button border-white/30 text-white hover:bg-white/10 px-6 py-3"
@@ -533,7 +815,50 @@ const HeroSection = () => {
       className={`min-h-screen flex items-center justify-center p-4 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
       style={{ background: 'var(--bg-gradient)' }}
     >
-      <div className="max-w-4xl w-full text-center">
+      <div className="max-w-4xl w-full text-center relative">
+        
+        {/* Microphone Status Indicator - Top Right - More Visible */}
+        <div className="absolute top-6 right-6 z-10">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-full shadow-lg" 
+               style={{ 
+                 background: 'rgba(30, 64, 175, 0.9)', 
+                 borderColor: 'rgba(59, 130, 246, 0.7)',
+                 border: '2px solid',
+                 backdropFilter: 'blur(10px)'
+               }}>
+            <div className="relative">
+              {hasPermission === true ? (
+                <Mic className="w-5 h-5 text-green-300" />
+              ) : hasPermission === false ? (
+                <MicOff className="w-5 h-5 text-red-300" />
+              ) : (
+                <Mic className="w-5 h-5 text-white opacity-70" />
+              )}
+            </div>
+            <span className={`text-sm font-semibold ${
+              hasPermission === true 
+                ? 'text-green-300' 
+                : hasPermission === false 
+                  ? 'text-red-300'
+                  : 'text-white opacity-70'
+            }`}>
+              {hasPermission === true 
+                ? 'MIC READY' 
+                : hasPermission === false 
+                  ? 'MIC OFF'
+                  : 'MIC STATUS'
+              }
+            </span>
+            <div className={`w-2 h-2 rounded-full ${
+              hasPermission === true 
+                ? 'bg-green-300' 
+                : hasPermission === false 
+                  ? 'bg-red-300'
+                  : 'bg-gray-400'
+            }`}></div>
+          </div>
+        </div>
+
         <div className="glass-card p-6 md:p-8 lg:p-12">
           
           {/* Logo */}
