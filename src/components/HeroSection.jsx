@@ -20,7 +20,7 @@ const HeroSection = () => {
     setIsVisible(true)
   }, [])
 
-  // Comprehensive language data_organized by regions
+  // Comprehensive language data organized by regions
   const languageGroups = {
     'English': [
       { code: 'en-US', name: 'English (United States)', native: 'English', flag: 'US', priority: 1 },
@@ -123,13 +123,49 @@ const HeroSection = () => {
       'fr-FR': 'Cette conversation est enregistrée à des fins de qualité. Êtes-vous d\'accord pour continuer?',
       'de-DE': 'Dieses Gespräch wird zu Qualitätszwecken aufgezeichnet. Stimmen Sie zu, fortzufahren?',
       'zh-CN': '此对话正在录音以确保质量。您同意继续吗？',
+      'zh-TW': '此對話正在錄音以確保品質。您同意繼續嗎？',
       'ja-JP': 'この会話は品質向上のために録音されています。続行に同意しますか？',
       'ko-KR': '이 대화는 품질 목적으로 녹음되고 있습니다. 계속 진행하는 것에 동의하십니까？',
       'ar-SA': 'يتم تسجيل هذه المحادثة لأغراض الجودة. هل توافق على المتابعة؟',
       'hi-IN': 'यह बातचीत गुणवत्ता के उद्देश्यों के लिए रिकॉर्ड की जा रही है। क्या आप आगे बढ़ने के लिए सहमत हैं?',
       'pt-BR': 'Esta conversa está sendo gravada para fins de qualidade. Você concorda em prosseguir?',
+      'pt-PT': 'Esta conversa está a ser gravada para fins de qualidade. Concorda em prosseguir?',
       'it-IT': 'Questa conversazione viene registrata per scopi di qualità. Sei d\'accordo a procedere?',
-      'ru-RU': 'Этот разговор записывается в целях качества. Согласны ли вы продолжить?'
+      'ru-RU': 'Этот разговор записывается в целях качества. Согласны ли вы продолжить?',
+      'ms-MY': 'Perbualan ini sedang dirakam untuk tujuan kualiti. Adakah anda bersetuju untuk meneruskan?',
+      'th-TH': 'การสนทนานี้กำลังถูกบันทึกเพื่อวัตถุประสงค์ด้านคุณภาพ คุณยินยอมที่จะดำเนินการต่อหรือไม่?',
+      'vi-VN': 'Cuộc trò chuyện này đang được ghi âm cho mục đích chất lượng. Bạn có đồng ý tiếp tục không?',
+      'id-ID': 'Percakapan ini sedang direkam untuk tujuan kualitas. Apakah Anda setuju untuk melanjutkan?',
+      'tl-PH': 'Ang pag-uusapang ito ay nirerekord para sa mga layuning kalidad. Sumasang-ayon ka ba na magpatuloy?',
+      'nl-NL': 'Dit gesprek wordt opgenomen voor kwaliteitsdoeleinden. Ga je akkoord om door te gaan?',
+      'sv-SE': 'Detta samtal spelas in för kvalitetsändamål. Godkänner du att fortsätta?',
+      'da-DK': 'Denne samtale optages til kvalitetsformål. Er du enig i at fortsætte?',
+      'no-NO': 'Denne samtalen blir tatt opp for kvalitetsformål. Er du enig i å fortsette?',
+      'fi-FI': 'Tämä keskustelu tallennetaan laatutarkoituksiin. Hyväksytkö jatkamisen?',
+      'pl-PL': 'Ta rozmowa jest nagrywana w celach jakościowych. Czy zgadzasz się kontynuować?',
+      'cs-CZ': 'Tento rozhovor je nahráván pro účely kvality. Souhlasíte s pokračováním?',
+      'hu-HU': 'Ez a beszélgetés minőségi célokból kerül rögzítésre. Egyetért a folytatással?',
+      'ro-RO': 'Această conversație este înregistrată în scopuri de calitate. Sunteți de acord să continuați?',
+      'bg-BG': 'Този разговор се записва за целите на качеството. Съгласни ли сте да продължите?',
+      'hr-HR': 'Ovaj razgovor se snima u svrhu kvalitete. Slažete li se da nastavimo?',
+      'sk-SK': 'Tento rozhovor sa nahráva na účely kvality. Súhlasíte s pokračovaním?',
+      'sl-SI': 'Ta pogovor se posname za namene kakovosti. Se strinjate s nadaljevanjem?',
+      'et-EE': 'See vestlus salvestatakse kvaliteedi eesmärkidel. Kas nõustute jätkamisega?',
+      'lv-LV': 'Šī saruna tiek ierakstīta kvalitātes nolūkos. Vai piekrītat turpināt?',
+      'lt-LT': 'Šis pokalbis įrašomas kokybės tikslais. Ar sutinkate tęsti?',
+      'mt-MT': 'Din il-konversazzjoni qed tiġi rrekordjata għal skopijiet ta\' kwalità. Taqbel li tkompli?',
+      'el-GR': 'Αυτή η συνομιλία καταγράφεται για σκοπούς ποιότητας. Συμφωνείτε να συνεχίσετε;',
+      'tr-TR': 'Bu konuşma kalite amaçları için kaydediliyor. Devam etmeyi kabul ediyor musunuz?',
+      'he-IL': 'השיחה הזו מוקלטת למטרות איכות. האם אתה מסכים להמשיך?',
+      'fa-IR': 'این مکالمه برای اهداف کیفیت ضبط می‌شود. آیا موافق ادامه هستید؟',
+      'ur-PK': 'یہ گفتگو معیار کے مقاصد کے لیے ریکارڈ کی جا رہی ہے۔ کیا آپ جاری رکھنے پر راضی ہیں؟',
+      'bn-BD': 'এই কথোপকথনটি গুণমানের উদ্দেশ্যে রেকর্ড করা হচ্ছে। আপনি কি এগিয়ে যেতে সম্মত?',
+      'ta-IN': 'இந்த உரையாடல் தரமான நோக்கங்களுக்காக பதிவு செய்யப்படுகிறது. தொடர ஒப்புக்கொள்கிறீர்களா?',
+      'te-IN': 'ఈ సంభాషణ నాణ్యత ప్రయోజనాల కోసం రికార్డ్ చేయబడుతోంది. మీరు కొనసాగించడానికి అంగీకరిస్తున్నారా?',
+      'ml-IN': 'ഈ സംഭാഷണം ഗുണനിലവാര ആവശ്യങ്ങൾക്കായി റെക്കോർഡ് ചെയ്യുന്നു. തുടരാൻ നിങ്ങൾ സമ്മതിക്കുന്നുണ്ടോ?',
+      'kn-IN': 'ಈ ಸಂಭಾಷಣೆಯನ್ನು ಗುಣಮಟ್ಟದ ಉದ್ದೇಶಗಳಿಗಾಗಿ ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಮುಂದುವರಿಸಲು ನೀವು ಒಪ್ಪುತ್ತೀರಾ?',
+      'gu-IN': 'આ વાર્તાલાપ ગુણવત્તાના હેતુઓ માટે રેકોર્ડ કરવામાં આવી રહ્યો છે. શું તમે આગળ વધવા માટે સંમત છો?',
+      'pa-IN': 'ਇਹ ਗੱਲਬਾਤ ਗੁਣਵੱਤਾ ਦੇ ਉਦੇਸ਼ਾਂ ਲਈ ਰਿਕਾਰਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ। ਕੀ ਤੁਸੀਂ ਅੱਗੇ ਵਧਣ ਲਈ ਸਹਿਮਤ ਹੋ?'
     }
     return messages[language?.code] || messages['en-US']
   }
@@ -237,7 +273,7 @@ const HeroSection = () => {
             </div>
             
             <div className="mb-8">
-              <div className="mb-4">
+              <div className="mb-6">
                 <h3 className="text-h3 mb-2" style={{ color: 'var(--text-primary)' }}>English</h3>
                 <p className="text-body" style={{ color: 'var(--text-muted)' }}>
                   This conversation is being recorded for quality purposes. Do you agree to proceed?
@@ -245,7 +281,9 @@ const HeroSection = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="text-h3 mb-2" style={{ color: 'var(--text-primary)' }}>{selectedLanguage?.native}</h3>
+                <h3 className="text-h3 mb-2" style={{ color: 'var(--text-primary)' }}>
+                  {selectedLanguage?.name || selectedLanguage?.native}
+                </h3>
                 <p className="text-body" style={{ color: 'var(--text-muted)' }}>
                   {getConsentMessage(selectedLanguage)}
                 </p>
