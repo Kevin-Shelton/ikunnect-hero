@@ -447,20 +447,28 @@ const HeroSection = () => {
             {!searchTerm && (
               <div className="mb-8">
                 <h3 className="text-h3 mb-4" style={{ color: 'var(--text-primary)' }}>Recent</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 px-4">
                   {recentLanguages.map((lang) => (
                     <button
                       key={lang.code}
                       onClick={() => handleLanguageSelect(lang)}
-                      className="flag-tile group"
+                      className="flag-tile group p-4 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                      style={{ 
+                        background: 'var(--glass-light)', 
+                        borderColor: 'var(--stroke)',
+                        border: '1px solid',
+                        minHeight: '120px'
+                      }}
                     >
-                      <FlagIcon countryCode={lang.flag} size="medium" />
-                      <div className="mt-2">
-                        <div className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
-                          {lang.flag}
-                        </div>
-                        <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                          {lang.native}
+                      <div className="flex flex-col items-center justify-center h-full">
+                        <FlagIcon countryCode={lang.flag} size="medium" />
+                        <div className="mt-3 text-center">
+                          <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                            {lang.flag}
+                          </div>
+                          <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                            {lang.native}
+                          </div>
                         </div>
                       </div>
                     </button>
@@ -474,20 +482,28 @@ const HeroSection = () => {
               <h3 className="text-h3 mb-4" style={{ color: 'var(--text-primary)' }}>
                 {searchTerm ? 'Search Results' : 'All Languages'}
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 max-h-96 overflow-y-auto p-4">
                 {filteredLanguages.map((lang) => (
                   <button
                     key={lang.code}
                     onClick={() => handleLanguageSelect(lang)}
-                    className="flag-tile group"
+                    className="flag-tile group p-4 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                    style={{ 
+                      background: 'var(--glass-light)', 
+                      borderColor: 'var(--stroke)',
+                      border: '1px solid',
+                      minHeight: '120px'
+                    }}
                   >
-                    <FlagIcon countryCode={lang.flag} size="medium" />
-                    <div className="mt-2">
-                      <div className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
-                        {lang.flag}
-                      </div>
-                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                        {lang.native}
+                    <div className="flex flex-col items-center justify-center h-full">
+                      <FlagIcon countryCode={lang.flag} size="medium" />
+                      <div className="mt-3 text-center">
+                        <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                          {lang.flag}
+                        </div>
+                        <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                          {lang.native}
+                        </div>
                       </div>
                     </div>
                   </button>
