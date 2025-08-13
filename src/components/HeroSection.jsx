@@ -232,7 +232,7 @@ const HeroSection = () => {
               <img 
                 src={logoSvg} 
                 alt="iKOneWorld - One Platform Every Language Every Channel"
-                className="mx-auto h-32 w-auto mb-4"
+                className="mx-auto h-80 w-auto mb-4"
               />
             </div>
             
@@ -289,7 +289,7 @@ const HeroSection = () => {
               <img 
                 src={logoSvg} 
                 alt="iKOneWorld - One Platform Every Language Every Channel"
-                className="mx-auto h-32 w-auto mb-6"
+                className="mx-auto h-80 w-auto mb-6"
               />
               
               {/* Enhanced ever-present pulsating orb */}
@@ -376,7 +376,7 @@ const HeroSection = () => {
                 }`}
               >
                 {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                {isRecording ? 'Stop Recording' : 'Begin'}
+                {isRecording ? 'Stop' : 'Begin'}
               </Button>
               
               <Button
@@ -430,7 +430,7 @@ const HeroSection = () => {
               <img 
                 src={logoSvg} 
                 alt="iKOneWorld - One Platform Every Language Every Channel"
-                className="mx-auto h-28 w-auto mb-4"
+                className="mx-auto h-64 w-auto mb-4"
               />
               <p className="text-h3 mb-4" style={{ color: 'var(--text-primary)' }}>
                 Select your target language
@@ -537,7 +537,7 @@ const HeroSection = () => {
             <img 
               src={logoSvg} 
               alt="iKOneWorld - One Platform Every Language Every Channel"
-              className="mx-auto h-40 w-auto mb-4"
+              className="mx-auto h-96 w-auto mb-4"
             />
             <p className="text-body max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
               Real-time translation supporting 152+ languages with AI-powered intelligence
