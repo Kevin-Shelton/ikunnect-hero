@@ -374,9 +374,9 @@ const HeroSection = () => {
   // Flag Icon Component
   const FlagIcon = ({ countryCode, size = 'medium' }) => {
     const sizeClasses = {
-      small: 'w-8 h-8',
-      medium: 'w-12 h-12',
-      large: 'w-16 h-16'
+      small: 'w-6 h-6 sm:w-8 sm:h-8',
+      medium: 'w-10 h-10 sm:w-12 sm:h-12',
+      large: 'w-12 h-12 sm:w-16 sm:h-16'
     }
 
     const flagUrl = `https://flagcdn.com/80x60/${countryCode?.toLowerCase()}.png`
@@ -445,7 +445,7 @@ const HeroSection = () => {
   )
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{
+    <div className="min-h-screen w-full flex flex-col" style={{
       background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 25%, #334155 50%, #475569 75%, #64748B 100%)'
     }}>
       {/* CSS Variables */}
@@ -513,34 +513,49 @@ const HeroSection = () => {
         }
         
         .text-display {
-          font-size: clamp(3rem, 8vw, 4rem);
+          font-size: clamp(2rem, 6vw, 3rem);
           font-weight: 800;
           line-height: 1.1;
         }
         
         .text-h2 {
-          font-size: clamp(1.75rem, 4vw, 2.25rem);
+          font-size: clamp(1.5rem, 4vw, 2rem);
           font-weight: 600;
           line-height: 1.2;
         }
         
         .text-h3 {
-          font-size: clamp(1.25rem, 3vw, 1.5rem);
+          font-size: clamp(1.125rem, 3vw, 1.375rem);
           font-weight: 600;
           line-height: 1.3;
         }
         
         .text-body {
-          font-size: clamp(1rem, 2.5vw, 1.125rem);
+          font-size: clamp(0.875rem, 2.5vw, 1rem);
           font-weight: 400;
           line-height: 1.5;
+        }
+        
+        /* Mobile-first responsive design */
+        @media (max-width: 640px) {
+          .glass-card {
+            margin: 0.5rem;
+            padding: 1rem !important;
+          }
+        }
+        
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .glass-card {
+            margin: 1rem;
+            padding: 1.5rem !important;
+          }
         }
       `}</style>
 
       {/* Microphone Status Indicator - Top Right */}
       {showConversation && (
-        <div className="fixed top-6 right-6 z-50">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full shadow-lg" 
+        <div className="fixed top-2 right-2 sm:top-4 sm:right-4 z-50">
+          <div className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full shadow-lg" 
                style={{ 
                  background: 'rgba(30, 64, 175, 0.9)', 
                  borderColor: 'rgba(59, 130, 246, 0.7)',
@@ -549,12 +564,12 @@ const HeroSection = () => {
                }}>
             <div className="relative">
               {hasPermission ? (
-                <Mic className="w-5 h-5 text-green-300" />
+                <Mic className="w-4 h-4 sm:w-5 sm:h-5 text-green-300" />
               ) : (
-                <MicOff className="w-5 h-5 text-red-300" />
+                <MicOff className="w-4 h-4 sm:w-5 sm:h-5 text-red-300" />
               )}
             </div>
-            <span className={`text-sm font-semibold ${
+            <span className={`text-xs sm:text-sm font-semibold ${
               hasPermission ? 'text-green-300' : 'text-red-300'
             }`}>
               {hasPermission ? 'MIC READY' : 'MIC OFF'}
@@ -566,483 +581,482 @@ const HeroSection = () => {
         </div>
       )}
 
-      <div className={`w-full max-w-4xl mx-auto ${isVisible ? 'fade-in' : 'opacity-0'}`}>
-        {/* Hero Section */}
-        {!showLanguageGrid && !showConversation && !showConsent && (
-          <div className="glass-card p-8 md:p-12 text-center">
-            {/* Logo */}
-            <div className="mb-8 flex justify-center">
-              <img 
-                src={logoSvg} 
-                alt="iKOneWorld Logo" 
-                className="h-96 w-auto"
-              />
-            </div>
-
-            {/* Tagline */}
-            <p className="text-h3 mb-8" style={{ color: 'var(--text-secondary)' }}>
-              Real-time translation supporting 152+ languages with AI-powered intelligence
-            </p>
-
-            {/* Translation Orb */}
-            <div className="mb-8 flex justify-center">
-              <div className="relative">
-                <div 
-                  className="w-24 h-24 rounded-full flex items-center justify-center pulse-glow"
-                  style={{ background: 'linear-gradient(135deg, #3B82F6, #1E40AF)' }}
-                >
-                  <Languages className="w-12 h-12 text-white" />
-                </div>
+      {/* Main Content Container - Full Height */}
+      <div className={`flex-1 flex items-center justify-center p-2 sm:p-4 ${isVisible ? 'fade-in' : 'opacity-0'}`}>
+        <div className="w-full max-w-6xl mx-auto">
+          
+          {/* Hero Section */}
+          {!showLanguageGrid && !showConversation && !showConsent && (
+            <div className="glass-card p-4 sm:p-6 lg:p-8 text-center">
+              {/* Logo - Responsive sizing */}
+              <div className="mb-4 sm:mb-6 flex justify-center">
+                <img 
+                  src={logoSvg} 
+                  alt="iKOneWorld Logo" 
+                  className="h-32 sm:h-48 lg:h-64 w-auto"
+                />
               </div>
-            </div>
 
-            {/* Language count */}
-            <div className="mb-8 flex items-center justify-center gap-2">
-              <Languages className="w-5 h-5" style={{ color: 'var(--accent-light)' }} />
-              <span className="text-body" style={{ color: 'var(--text-muted)' }}>152+ Languages</span>
-            </div>
-
-            {/* Language showcase */}
-            <div className="mb-8 flex items-center justify-center gap-4">
-              <div className="flex items-center gap-2">
-                <FlagIcon countryCode="US" size="small" />
-                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>"Hello, how are you?"</span>
-              </div>
-              <ArrowLeftRight className="w-5 h-5" style={{ color: 'var(--accent-light)' }} />
-              <div className="flex items-center gap-2">
-                <FlagIcon countryCode="ES" size="small" />
-                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>"Hola, ¿cómo estás?"</span>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            {!emailMode ? (
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  onClick={handleStartConversation}
-                  className="pill-button bg-white text-blue-900 hover:bg-gray-100 px-8 py-3 text-lg"
-                >
-                  Start Conversation
-                </Button>
-                <Button
-                  onClick={handleTryDemo}
-                  className="pill-button bg-white text-blue-900 hover:bg-gray-100 px-8 py-3 text-lg"
-                >
-                  Try Demo
-                </Button>
-                <Button
-                  onClick={handleTryVoice}
-                  variant="outline"
-                  className="pill-button border-white text-white hover:bg-white/10 px-8 py-3 text-lg"
-                >
-                  Try Your Voice
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="flex-1 bg-white/10 border-white/30 text-white placeholder:text-white/60"
-                  />
-                  <Button
-                    onClick={handleEmailVerification}
-                    className="pill-button bg-blue-600 hover:bg-blue-700 text-white px-6"
-                  >
-                    Verify
-                  </Button>
-                </div>
-                <Button
-                  onClick={() => setEmailMode(false)}
-                  variant="ghost"
-                  className="text-white/70 hover:text-white"
-                >
-                  Back
-                </Button>
-              </div>
-            )}
-
-            {/* Scroll indicator */}
-            <div className="mt-12 flex justify-center">
-              <ChevronDown className="w-6 h-6 animate-bounce" style={{ color: 'var(--text-muted)' }} />
-            </div>
-          </div>
-        )}
-
-        {/* Language Selection Grid */}
-        {showLanguageGrid && (
-          <div className="glass-card p-8">
-            {/* Logo */}
-            <div className="mb-6 flex justify-center">
-              <img 
-                src={logoSvg} 
-                alt="iKOneWorld Logo" 
-                className="h-64 w-auto"
-              />
-            </div>
-
-            <h2 className="text-h2 text-center mb-6" style={{ color: 'var(--text-primary)' }}>
-              Select your target language
-            </h2>
-
-            {/* Search */}
-            <div className="relative mb-6">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
-              <Input
-                type="text"
-                placeholder="Search languages..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white/10 border-white/30 text-white placeholder:text-white/60"
-              />
-            </div>
-
-            {/* Recent Languages */}
-            <div className="mb-8">
-              <h3 className="text-h3 mb-4" style={{ color: 'var(--text-primary)' }}>Recent</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                {recentLanguages.map((language) => (
-                  <button
-                    key={language.code}
-                    onClick={() => handleLanguageSelect(language)}
-                    className="glass-card p-4 flex flex-col items-center justify-center hover:scale-105 hover:shadow-lg transition-all duration-200"
-                    style={{ minHeight: '120px' }}
-                  >
-                    <FlagIcon countryCode={language.flag} size="medium" />
-                    <div className="mt-3 text-center">
-                      <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                        {language.flag.toUpperCase()}
-                      </div>
-                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                        {language.native}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* All Languages */}
-            <div>
-              <h3 className="text-h3 mb-4" style={{ color: 'var(--text-primary)' }}>All Languages</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 max-h-96 overflow-y-auto">
-                {filteredLanguages.map((language) => (
-                  <button
-                    key={language.code}
-                    onClick={() => handleLanguageSelect(language)}
-                    className="glass-card p-4 flex flex-col items-center justify-center hover:scale-105 hover:shadow-lg transition-all duration-200"
-                    style={{ minHeight: '120px' }}
-                  >
-                    <FlagIcon countryCode={language.flag} size="medium" />
-                    <div className="mt-3 text-center">
-                      <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                        {language.flag.toUpperCase()}
-                      </div>
-                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                        {language.native}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Back button */}
-            <div className="mt-8 text-center">
-              <Button
-                onClick={() => setShowLanguageGrid(false)}
-                variant="outline"
-                className="pill-button border-white/30 text-white hover:bg-white/10 px-6 py-3"
-              >
-                Back to Home
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Consent Dialog */}
-        {showConsent && selectedLanguage && (
-          <div className="glass-card p-8 text-center">
-            {/* Logo */}
-            <div className="mb-6 flex justify-center">
-              <img 
-                src={logoSvg} 
-                alt="iKOneWorld Logo" 
-                className="h-80 w-auto"
-              />
-            </div>
-
-            {/* English consent */}
-            <div className="mb-6">
-              <h3 className="text-h3 mb-4" style={{ color: 'var(--text-primary)' }}>English</h3>
-              <p className="text-body" style={{ color: 'var(--text-secondary)' }}>
-                This conversation is being recorded for quality purposes. Do you agree to proceed?
+              {/* Tagline */}
+              <p className="text-h3 mb-4 sm:mb-6 px-2" style={{ color: 'var(--text-secondary)' }}>
+                Real-time translation supporting 152+ languages with AI-powered intelligence
               </p>
-            </div>
 
-            {/* Selected language consent */}
-            <div className="mb-8">
-              <h3 className="text-h3 mb-4" style={{ color: 'var(--text-primary)' }}>
-                {selectedLanguage.name || selectedLanguage.native}
-              </h3>
-              <p className="text-body" style={{ color: 'var(--text-secondary)' }}>
-                {getConsentMessage(selectedLanguage)}
-              </p>
-            </div>
-
-            {/* Consent buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                onClick={handleConsentAccept}
-                className="pill-button bg-white text-blue-900 hover:bg-gray-100 px-8 py-3"
-              >
-                {getButtonText(selectedLanguage, 'ok')} / OK
-              </Button>
-              <Button
-                onClick={handleConsentDecline}
-                variant="outline"
-                className="pill-button border-white/30 text-white hover:bg-white/10 px-8 py-3"
-              >
-                {getButtonText(selectedLanguage, 'cancel')} / Cancel
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Conversation Interface */}
-        {showConversation && selectedLanguage && (
-          <div className="glass-card p-8">
-            {/* Logo */}
-            <div className="mb-6 flex justify-center">
-              <img 
-                src={logoSvg} 
-                alt="iKOneWorld Logo" 
-                className="h-80 w-auto"
-              />
-            </div>
-
-            {/* Enhanced Translation Orb */}
-            <div className="mb-6 flex justify-center">
-              <div className="relative">
-                <div 
-                  className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-500 ${
-                    isRecording && isSpeaking ? 'pulse-glow scale-110' : 'pulse-glow'
-                  }`}
-                  style={{ 
-                    background: 'linear-gradient(135deg, #3B82F6, #1E40AF)',
-                    boxShadow: isRecording && isSpeaking 
-                      ? '0 0 50px rgba(59, 130, 246, 0.8), 0 0 100px rgba(59, 130, 246, 0.4)' 
-                      : '0 0 30px rgba(59, 130, 246, 0.5)'
-                  }}
-                >
-                  <Languages className="w-16 h-16 text-white" />
-                </div>
-                
-                {/* Pulse rings when speaking */}
-                {isRecording && isSpeaking && (
-                  <>
-                    <div className="absolute inset-0 rounded-full border-2 border-blue-300 animate-ping opacity-40"></div>
-                    <div className="absolute inset-0 rounded-full border border-blue-400 animate-pulse opacity-60"></div>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Status Indicator */}
-            <div className="mb-6 flex justify-center">
-              <div className="flex items-center gap-3 px-6 py-3 rounded-full shadow-lg" 
-                   style={{ 
-                     background: 'rgba(30, 64, 175, 0.8)', 
-                     borderColor: 'rgba(59, 130, 246, 0.5)',
-                     border: '2px solid',
-                     backdropFilter: 'blur(10px)'
-                   }}>
+              {/* Translation Orb */}
+              <div className="mb-4 sm:mb-6 flex justify-center">
                 <div className="relative">
-                  {isRecording ? (
-                    <div className="relative">
-                      <Mic className={`w-6 h-6 ${isSpeaking ? 'text-green-300' : 'text-red-300'}`} />
-                      {isSpeaking && (
-                        <div className="absolute -inset-2 rounded-full animate-ping bg-green-300 opacity-40"></div>
-                      )}
-                    </div>
-                  ) : (
-                    <MicOff className="w-6 h-6 text-white opacity-70" />
-                  )}
-                </div>
-                <span className={`text-base font-semibold ${
-                  isRecording 
-                    ? isSpeaking 
-                      ? 'text-green-300' 
-                      : 'text-red-300'
-                    : 'text-white opacity-70'
-                }`}>
-                  {statusText.toUpperCase()}
-                </span>
-                <div className={`w-3 h-3 rounded-full ${
-                  isRecording 
-                    ? isSpeaking 
-                      ? 'bg-green-300 animate-pulse' 
-                      : 'bg-red-300 animate-pulse'
-                    : hasPermission === false
-                      ? 'bg-red-400'
-                      : 'bg-gray-400'
-                }`}></div>
-              </div>
-            </div>
-
-            {/* Microphone Permission Status */}
-            {permissionError && (
-              <div className="mb-6 p-4 rounded-lg" style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', border: '1px solid' }}>
-                <div className="flex items-center gap-2 text-red-400">
-                  <AlertCircle className="w-5 h-5" />
-                  <span className="text-sm">{permissionError}</span>
-                </div>
-                <Button
-                  onClick={requestMicrophonePermission}
-                  className="mt-2 pill-button bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm"
-                >
-                  Grant Microphone Access
-                </Button>
-              </div>
-            )}
-
-            {/* Audio Level Indicator */}
-            {hasPermission && isRecording && (
-              <div className="mb-6 flex justify-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Audio Level:</span>
-                  <div className="w-32 h-2 rounded-full" style={{ background: 'var(--glass-light)' }}>
-                    <div 
-                      className="h-full rounded-full transition-all duration-100"
-                      style={{ 
-                        width: `${audioLevel * 100}%`,
-                        background: audioLevel > 0.5 ? '#10B981' : audioLevel > 0.2 ? '#F59E0B' : '#6B7280'
-                      }}
-                    />
+                  <div 
+                    className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full flex items-center justify-center pulse-glow"
+                    style={{ background: 'linear-gradient(135deg, #3B82F6, #1E40AF)' }}
+                  >
+                    <Languages className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-white" />
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Language pair display */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {/* Employee side (English) */}
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-3 mb-4">
+              {/* Language count */}
+              <div className="mb-4 sm:mb-6 flex items-center justify-center gap-2">
+                <Languages className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: 'var(--accent-light)' }} />
+                <span className="text-body" style={{ color: 'var(--text-muted)' }}>152+ Languages</span>
+              </div>
+
+              {/* Language showcase - Responsive */}
+              <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+                <div className="flex items-center gap-2">
                   <FlagIcon countryCode="US" size="small" />
-                  <span className="text-h3" style={{ color: 'var(--text-primary)' }}>Employee</span>
+                  <span className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>"Hello, how are you?"</span>
                 </div>
-                <div 
-                  className="glass-card p-4 min-h-[120px] flex items-center justify-center"
-                  style={{ background: 'var(--glass-light)', borderColor: 'var(--stroke)' }}
-                >
-                  <p className="text-body" style={{ color: 'var(--text-primary)' }}>
-                    {employeeText || '"Hello, how can I help you today?"'}
-                  </p>
+                <ArrowLeftRight className="w-4 h-4 sm:w-5 sm:h-5 rotate-90 sm:rotate-0" style={{ color: 'var(--accent-light)' }} />
+                <div className="flex items-center gap-2">
+                  <FlagIcon countryCode="ES" size="small" />
+                  <span className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>"Hola, ¿cómo estás?"</span>
                 </div>
               </div>
 
-              {/* Customer side (Selected language) */}
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <FlagIcon countryCode={selectedLanguage?.flag} size="small" />
-                  <span className="text-h3" style={{ color: 'var(--text-primary)' }}>Customer</span>
+              {/* Action buttons - Responsive */}
+              {!emailMode ? (
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                  <Button
+                    onClick={handleStartConversation}
+                    className="pill-button bg-white text-blue-900 hover:bg-gray-100 px-6 sm:px-8 py-2 sm:py-3 text-base sm:text-lg"
+                  >
+                    Start Conversation
+                  </Button>
+                  <Button
+                    onClick={handleTryDemo}
+                    className="pill-button bg-white text-blue-900 hover:bg-gray-100 px-6 sm:px-8 py-2 sm:py-3 text-base sm:text-lg"
+                  >
+                    Try Demo
+                  </Button>
+                  <Button
+                    onClick={handleTryVoice}
+                    variant="outline"
+                    className="pill-button border-white text-white hover:bg-white/10 px-6 sm:px-8 py-2 sm:py-3 text-base sm:text-lg"
+                  >
+                    Try Your Voice
+                  </Button>
                 </div>
-                <div 
-                  className="glass-card p-4 min-h-[120px] flex items-center justify-center"
-                  style={{ background: 'var(--glass-light)', borderColor: 'var(--stroke)' }}
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="flex-1 bg-white/10 border-white/30 text-white placeholder:text-white/60"
+                    />
+                    <Button
+                      onClick={handleEmailVerification}
+                      className="pill-button bg-blue-600 hover:bg-blue-700 text-white px-6"
+                    >
+                      Verify
+                    </Button>
+                  </div>
+                  <Button
+                    onClick={() => setEmailMode(false)}
+                    variant="ghost"
+                    className="text-white/70 hover:text-white"
+                  >
+                    Back
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Language Selection Grid */}
+          {showLanguageGrid && (
+            <div className="glass-card p-4 sm:p-6 lg:p-8">
+              {/* Logo - Smaller for language grid */}
+              <div className="mb-4 sm:mb-6 flex justify-center">
+                <img 
+                  src={logoSvg} 
+                  alt="iKOneWorld Logo" 
+                  className="h-24 sm:h-32 lg:h-40 w-auto"
+                />
+              </div>
+
+              <h2 className="text-h2 text-center mb-4 sm:mb-6" style={{ color: 'var(--text-primary)' }}>
+                Select your target language
+              </h2>
+
+              {/* Search */}
+              <div className="relative mb-4 sm:mb-6">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5" style={{ color: 'var(--text-muted)' }} />
+                <Input
+                  type="text"
+                  placeholder="Search languages..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-white/10 border-white/30 text-white placeholder:text-white/60"
+                />
+              </div>
+
+              {/* Recent Languages */}
+              <div className="mb-6 sm:mb-8">
+                <h3 className="text-h3 mb-3 sm:mb-4" style={{ color: 'var(--text-primary)' }}>Recent</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                  {recentLanguages.map((language) => (
+                    <button
+                      key={language.code}
+                      onClick={() => handleLanguageSelect(language)}
+                      className="glass-card p-3 sm:p-4 flex flex-col items-center justify-center hover:scale-105 hover:shadow-lg transition-all duration-200"
+                      style={{ minHeight: '100px' }}
+                    >
+                      <FlagIcon countryCode={language.flag} size="medium" />
+                      <div className="mt-2 sm:mt-3 text-center">
+                        <div className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                          {language.flag.toUpperCase()}
+                        </div>
+                        <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                          {language.native}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* All Languages */}
+              <div>
+                <h3 className="text-h3 mb-3 sm:mb-4" style={{ color: 'var(--text-primary)' }}>All Languages</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 max-h-64 sm:max-h-80 lg:max-h-96 overflow-y-auto">
+                  {filteredLanguages.map((language) => (
+                    <button
+                      key={language.code}
+                      onClick={() => handleLanguageSelect(language)}
+                      className="glass-card p-3 sm:p-4 flex flex-col items-center justify-center hover:scale-105 hover:shadow-lg transition-all duration-200"
+                      style={{ minHeight: '100px' }}
+                    >
+                      <FlagIcon countryCode={language.flag} size="medium" />
+                      <div className="mt-2 sm:mt-3 text-center">
+                        <div className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                          {language.flag.toUpperCase()}
+                        </div>
+                        <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                          {language.native}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Back button */}
+              <div className="mt-6 sm:mt-8 text-center">
+                <Button
+                  onClick={() => setShowLanguageGrid(false)}
+                  variant="outline"
+                  className="pill-button border-white/30 text-white hover:bg-white/10 px-6 py-3"
                 >
-                  <p className="text-body" style={{ color: 'var(--text-primary)' }}>
-                    {customerText || getCustomerGreeting(selectedLanguage)}
-                  </p>
-                </div>
+                  Back to Home
+                </Button>
               </div>
             </div>
+          )}
 
-            {/* Recording controls - Hidden in hands-free mode */}
-            {!isHandsFree && (
-              <div className="flex justify-center gap-4 mb-6">
+          {/* Consent Dialog */}
+          {showConsent && selectedLanguage && (
+            <div className="glass-card p-4 sm:p-6 lg:p-8 text-center">
+              {/* Logo - Smaller for consent */}
+              <div className="mb-4 sm:mb-6 flex justify-center">
+                <img 
+                  src={logoSvg} 
+                  alt="iKOneWorld Logo" 
+                  className="h-24 sm:h-32 lg:h-40 w-auto"
+                />
+              </div>
+
+              {/* English consent */}
+              <div className="mb-4 sm:mb-6">
+                <h3 className="text-h3 mb-3 sm:mb-4" style={{ color: 'var(--text-primary)' }}>English</h3>
+                <p className="text-body px-2" style={{ color: 'var(--text-secondary)' }}>
+                  This conversation is being recorded for quality purposes. Do you agree to proceed?
+                </p>
+              </div>
+
+              {/* Selected language consent */}
+              <div className="mb-6 sm:mb-8">
+                <h3 className="text-h3 mb-3 sm:mb-4" style={{ color: 'var(--text-primary)' }}>
+                  {selectedLanguage.name || selectedLanguage.native}
+                </h3>
+                <p className="text-body px-2" style={{ color: 'var(--text-secondary)' }}>
+                  {getConsentMessage(selectedLanguage)}
+                </p>
+              </div>
+
+              {/* Consent buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <Button
-                  onClick={toggleRecording}
-                  className={`pill-button px-6 py-3 flex items-center gap-2 ${
-                    isRecording 
-                      ? 'bg-red-600 hover:bg-red-700 text-white' 
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
+                  onClick={handleConsentAccept}
+                  className="pill-button bg-white text-blue-900 hover:bg-gray-100 px-6 sm:px-8 py-2 sm:py-3"
                 >
-                  {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                  {isRecording ? 'Stop' : 'Begin'}
+                  {getButtonText(selectedLanguage, 'ok')} / OK
                 </Button>
-                
                 <Button
-                  onClick={playRecordedAudio}
-                  disabled={!recordedAudio}
-                  className={`pill-button px-6 py-3 flex items-center gap-2 ${
-                    recordedAudio 
-                      ? 'bg-green-600 hover:bg-green-700 text-white' 
-                      : 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                  }`}
+                  onClick={handleConsentDecline}
+                  variant="outline"
+                  className="pill-button border-white/30 text-white hover:bg-white/10 px-6 sm:px-8 py-2 sm:py-3"
                 >
-                  <Volume2 className="w-5 h-5" />
-                  Play Translation
+                  {getButtonText(selectedLanguage, 'cancel')} / Cancel
                 </Button>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Hands-free controls */}
-            {isHandsFree && (
-              <div className="flex justify-center gap-4 mb-6">
+          {/* Conversation Interface */}
+          {showConversation && selectedLanguage && (
+            <div className="glass-card p-4 sm:p-6 lg:p-8">
+              {/* Logo - Smaller for conversation */}
+              <div className="mb-4 sm:mb-6 flex justify-center">
+                <img 
+                  src={logoSvg} 
+                  alt="iKOneWorld Logo" 
+                  className="h-20 sm:h-24 lg:h-32 w-auto"
+                />
+              </div>
+
+              {/* Enhanced Translation Orb */}
+              <div className="mb-4 sm:mb-6 flex justify-center">
+                <div className="relative">
+                  <div 
+                    className={`w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full flex items-center justify-center transition-all duration-500 ${
+                      isRecording && isSpeaking ? 'pulse-glow scale-110' : 'pulse-glow'
+                    }`}
+                    style={{ 
+                      background: 'linear-gradient(135deg, #3B82F6, #1E40AF)',
+                      boxShadow: isRecording && isSpeaking 
+                        ? '0 0 50px rgba(59, 130, 246, 0.8), 0 0 100px rgba(59, 130, 246, 0.4)' 
+                        : '0 0 30px rgba(59, 130, 246, 0.5)'
+                    }}
+                  >
+                    <Languages className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-white" />
+                  </div>
+                  
+                  {/* Pulse rings when speaking */}
+                  {isRecording && isSpeaking && (
+                    <>
+                      <div className="absolute inset-0 rounded-full border-2 border-blue-300 animate-ping opacity-40"></div>
+                      <div className="absolute inset-0 rounded-full border border-blue-400 animate-pulse opacity-60"></div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Status Indicator */}
+              <div className="mb-4 sm:mb-6 flex justify-center">
+                <div className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg" 
+                     style={{ 
+                       background: 'rgba(30, 64, 175, 0.8)', 
+                       borderColor: 'rgba(59, 130, 246, 0.5)',
+                       border: '2px solid',
+                       backdropFilter: 'blur(10px)'
+                     }}>
+                  <div className="relative">
+                    {isRecording ? (
+                      <div className="relative">
+                        <Mic className={`w-5 h-5 sm:w-6 sm:h-6 ${isSpeaking ? 'text-green-300' : 'text-red-300'}`} />
+                        {isSpeaking && (
+                          <div className="absolute -inset-2 rounded-full animate-ping bg-green-300 opacity-40"></div>
+                        )}
+                      </div>
+                    ) : (
+                      <MicOff className="w-5 h-5 sm:w-6 sm:h-6 text-white opacity-70" />
+                    )}
+                  </div>
+                  <span className={`text-sm sm:text-base font-semibold ${
+                    isRecording 
+                      ? isSpeaking 
+                        ? 'text-green-300' 
+                        : 'text-red-300'
+                      : 'text-white opacity-70'
+                  }`}>
+                    {statusText.toUpperCase()}
+                  </span>
+                  <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${
+                    isRecording 
+                      ? isSpeaking 
+                        ? 'bg-green-300 animate-pulse' 
+                        : 'bg-red-300 animate-pulse'
+                      : hasPermission === false
+                        ? 'bg-red-400'
+                        : 'bg-gray-400'
+                  }`}></div>
+                </div>
+              </div>
+
+              {/* Microphone Permission Status */}
+              {permissionError && (
+                <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg" style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', border: '1px solid' }}>
+                  <div className="flex items-center gap-2 text-red-400">
+                    <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-xs sm:text-sm">{permissionError}</span>
+                  </div>
+                  <Button
+                    onClick={requestMicrophonePermission}
+                    className="mt-2 pill-button bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm"
+                  >
+                    Grant Microphone Access
+                  </Button>
+                </div>
+              )}
+
+              {/* Audio Level Indicator */}
+              {hasPermission && isRecording && (
+                <div className="mb-4 sm:mb-6 flex justify-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs sm:text-sm" style={{ color: 'var(--text-muted)' }}>Audio Level:</span>
+                    <div className="w-24 sm:w-32 h-2 rounded-full" style={{ background: 'var(--glass-light)' }}>
+                      <div 
+                        className="h-full rounded-full transition-all duration-100"
+                        style={{ 
+                          width: `${audioLevel * 100}%`,
+                          background: audioLevel > 0.5 ? '#10B981' : audioLevel > 0.2 ? '#F59E0B' : '#6B7280'
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Language pair display - Responsive */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                {/* Employee side (English) */}
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                    <FlagIcon countryCode="US" size="small" />
+                    <span className="text-h3" style={{ color: 'var(--text-primary)' }}>Employee</span>
+                  </div>
+                  <div 
+                    className="glass-card p-3 sm:p-4 min-h-[80px] sm:min-h-[100px] flex items-center justify-center"
+                    style={{ background: 'var(--glass-light)', borderColor: 'var(--stroke)' }}
+                  >
+                    <p className="text-body" style={{ color: 'var(--text-primary)' }}>
+                      {employeeText || '"Hello, how can I help you today?"'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Customer side (Selected language) */}
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                    <FlagIcon countryCode={selectedLanguage?.flag} size="small" />
+                    <span className="text-h3" style={{ color: 'var(--text-primary)' }}>Customer</span>
+                  </div>
+                  <div 
+                    className="glass-card p-3 sm:p-4 min-h-[80px] sm:min-h-[100px] flex items-center justify-center"
+                    style={{ background: 'var(--glass-light)', borderColor: 'var(--stroke)' }}
+                  >
+                    <p className="text-body" style={{ color: 'var(--text-primary)' }}>
+                      {customerText || getCustomerGreeting(selectedLanguage)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recording controls - Hidden in hands-free mode */}
+              {!isHandsFree && (
+                <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <Button
+                    onClick={toggleRecording}
+                    className={`pill-button px-4 sm:px-6 py-2 sm:py-3 flex items-center gap-2 ${
+                      isRecording 
+                        ? 'bg-red-600 hover:bg-red-700 text-white' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {isRecording ? <MicOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />}
+                    {isRecording ? 'Stop' : 'Begin'}
+                  </Button>
+                  
+                  <Button
+                    onClick={playRecordedAudio}
+                    disabled={!recordedAudio}
+                    className={`pill-button px-4 sm:px-6 py-2 sm:py-3 flex items-center gap-2 ${
+                      recordedAudio 
+                        ? 'bg-green-600 hover:bg-green-700 text-white' 
+                        : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                    }`}
+                  >
+                    <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Play Translation
+                  </Button>
+                </div>
+              )}
+
+              {/* Hands-free controls */}
+              {isHandsFree && (
+                <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <Button
+                    onClick={async () => {
+                      setStatusText('Paused')
+                      setIsRecording(false)
+                    }}
+                    className="pill-button px-4 sm:px-6 py-2 sm:py-3 flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white"
+                  >
+                    <MicOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Pause Listening
+                  </Button>
+                  
+                  <Button
+                    onClick={playRecordedAudio}
+                    disabled={!recordedAudio}
+                    className={`pill-button px-4 sm:px-6 py-2 sm:py-3 flex items-center gap-2 ${
+                      recordedAudio 
+                        ? 'bg-green-600 hover:bg-green-700 text-white' 
+                        : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                    }`}
+                  >
+                    <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Play Translation
+                  </Button>
+                </div>
+              )}
+
+              {/* Back to language selection */}
+              <div className="text-center">
                 <Button
                   onClick={async () => {
-                    setStatusText('Paused')
-                    setIsRecording(false)
+                    setShowConversation(false)
+                    setShowLanguageGrid(true)
+                    setSelectedLanguage(null)
+                    setIsHandsFree(false)
+                    setEmployeeText('')
+                    setCustomerText('')
+                    setStatusText('Idle')
+                    stopRecording()
+                    setRecordedAudio(null)
                   }}
-                  className="pill-button px-6 py-3 flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white"
+                  variant="outline"
+                  className="pill-button border-white/30 text-white hover:bg-white/10 px-4 sm:px-6 py-2 sm:py-3"
                 >
-                  <MicOff className="w-5 h-5" />
-                  Pause Listening
-                </Button>
-                
-                <Button
-                  onClick={playRecordedAudio}
-                  disabled={!recordedAudio}
-                  className={`pill-button px-6 py-3 flex items-center gap-2 ${
-                    recordedAudio 
-                      ? 'bg-green-600 hover:bg-green-700 text-white' 
-                      : 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                  }`}
-                >
-                  <Volume2 className="w-5 h-5" />
-                  Play Translation
+                  Change Language
                 </Button>
               </div>
-            )}
-
-            {/* Back to language selection */}
-            <div className="text-center">
-              <Button
-                onClick={async () => {
-                  setShowConversation(false)
-                  setShowLanguageGrid(true)
-                  setSelectedLanguage(null)
-                  setIsHandsFree(false)
-                  setEmployeeText('')
-                  setCustomerText('')
-                  setStatusText('Idle')
-                  stopRecording()
-                  setRecordedAudio(null)
-                }}
-                variant="outline"
-                className="pill-button border-white/30 text-white hover:bg-white/10 px-6 py-3"
-              >
-                Change Language
-              </Button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )
