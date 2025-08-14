@@ -1,10 +1,10 @@
-import HeroSection from './components/HeroSection.jsx'
+import HandsFreeHeroSection from './components/HandsFreeHeroSection.jsx'
 import './App.css'
 
 function App() {
   return (
     <div className="App">
-      <HeroSection />
+      <HandsFreeHeroSection />
     </div>
   )
 }
